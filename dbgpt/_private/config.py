@@ -217,6 +217,12 @@ class Config(metaclass=Singleton):
         self.MILVUS_USERNAME = os.getenv("MILVUS_USERNAME", None)
         self.MILVUS_PASSWORD = os.getenv("MILVUS_PASSWORD", None)
 
+        self.OB_HOST = os.getenv("OB_HOST", "127.0.0.1")
+        self.OB_PORT = os.getenv("OB_PORT", 2881)
+        self.OB_USER = os.getenv("OB_USER", "root")
+        self.OB_PASSWORD = os.getenv("OB_PASSWORD", "")
+        self.OB_DATABASE = os.getenv("OB_DATABASE", "test")
+
         # QLoRA
         self.QLoRA = os.getenv("QUANTIZE_QLORA", "True")
         self.IS_LOAD_8BIT = os.getenv("QUANTIZE_8bit", "True").lower() == "true"
