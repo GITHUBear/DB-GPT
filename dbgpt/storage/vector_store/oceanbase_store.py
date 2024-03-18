@@ -38,13 +38,16 @@ class OceanBaseStore(VectorStoreBase):
             logger = self.logger,
         )
 
-    def similar_search(self, text, topk, **kwargs: Any) -> None:
+    def similar_search(self, text, topk, **kwargs: Any) -> List[Chunk]:
         self.logger.info("OceanBase: similar_search..")
-        return self.vector_store_client.similarity_search(text, topk)
+        lc_documents = self.vector_store_client.similarity_search(text, topk)
+        return [
+            Chunk(content=doc.page_content, metadata=doc.metadata)
+            for doc in lc_documents
+        ]
 
     def similar_search_with_scores(self, text, topk, score_threshold) -> List[Chunk]:
         self.logger.info("OceanBase: similar_search_with_scores..")
-        # return self.vector_store_client.similarity_search_with_score(text, topk)
         docs_and_scores = (
             self.vector_store_client.similarity_search_with_score(text, topk)
         )
@@ -76,4 +79,6 @@ class OceanBaseStore(VectorStoreBase):
 
     def delete_by_ids(self, ids):
         self.logger.info("OceanBase: delete_by_ids..")
-        return self.vector_store_client.delete(ids)
+        ids = ids.split(",")
+        if len(ids) > 0:
+            self.vector_store_client.delete(ids)
