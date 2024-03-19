@@ -9,6 +9,16 @@ from dbgpt.rag.chunk import Chunk
 from dbgpt.storage.vector_store.base import VectorStoreBase, VectorStoreConfig
 
 logger = logging.getLogger(__name__)
+sql_logger = None
+sql_dbg_log_path = os.getenv("OB_SQL_DBG_LOG_PATH", "")
+if sql_dbg_log_path != "":
+    sql_logger = logging.getLogger('ob_sql_dbg')
+    sql_logger.setLevel(logging.DEBUG)
+    file_handler = logging.FileHandler(sql_dbg_log_path)
+    file_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    sql_logger.addHandler(file_handler)
 
 CFG = Config()
 
@@ -31,11 +41,13 @@ class OceanBaseStore(VectorStoreBase):
         self.embeddings = vector_store_config.embedding_fn
         self.collection_name = vector_store_config.name
         self.logger = logger
+        
         self.vector_store_client = OceanBase(
             connection_string = self.connection_string,
             embedding_function = self.embeddings,
             collection_name = self.collection_name,
             logger = self.logger,
+            sql_logger = sql_logger,
         )
 
     def similar_search(self, text, topk, **kwargs: Any) -> List[Chunk]:

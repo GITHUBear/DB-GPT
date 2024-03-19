@@ -222,6 +222,7 @@ class Config(metaclass=Singleton):
         self.OB_USER = os.getenv("OB_USER", "root")
         self.OB_PASSWORD = os.getenv("OB_PASSWORD", "")
         self.OB_DATABASE = os.getenv("OB_DATABASE", "test")
+        self.OB_SQL_DBG_LOG_PATH = os.getenv("OB_SQL_DBG_LOG_PATH", "")
 
         # QLoRA
         self.QLoRA = os.getenv("QUANTIZE_QLORA", "True")
