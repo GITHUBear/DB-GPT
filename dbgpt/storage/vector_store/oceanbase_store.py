@@ -1,5 +1,6 @@
 import os
 import logging
+import threading
 from typing import Any, List
 
 from pydantic import Field
@@ -29,8 +30,12 @@ class OceanBaseConfig(VectorStoreConfig):
         description="the connection string of vector store, if not set, will use the default connection string.",
     )
 
+ob_collection_stats_lock = threading.Lock()
+ob_collection_stats = {}
+
 class OceanBaseStore(VectorStoreBase):
     def __init__(self, vector_store_config: OceanBaseConfig) -> None:
+        import langchain.vectorstores
         from langchain.vectorstores import OceanBase
         self.OB_HOST = os.getenv("OB_HOST", "127.0.0.1")
         self.OB_PORT = os.getenv("OB_PORT", 2881)
@@ -41,6 +46,10 @@ class OceanBaseStore(VectorStoreBase):
         self.embeddings = vector_store_config.embedding_fn
         self.collection_name = vector_store_config.name
         self.logger = logger
+        with ob_collection_stats_lock:
+            if ob_collection_stats.get(self.collection_name) is None:
+                ob_collection_stats[self.collection_name] = langchain.vectorstores.oceanbase.OceanBaseCollectionStat()
+            self.collection_stat = ob_collection_stats[self.collection_name]                
         
         self.vector_store_client = OceanBase(
             connection_string = self.connection_string,
@@ -48,6 +57,8 @@ class OceanBaseStore(VectorStoreBase):
             collection_name = self.collection_name,
             logger = self.logger,
             sql_logger = sql_logger,
+            enable_index = True,
+            collection_stat = self.collection_stat
         )
 
     def similar_search(self, text, topk, **kwargs: Any) -> List[Chunk]:
