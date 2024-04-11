@@ -27,6 +27,9 @@ WORKDIR /app
 # Install all
 # RUN pip3 install -i $PIP_INDEX_URL ".[all]"
 
+RUN git clone https://github.com/GITHUBear/langchain.git && cd langchain && git checkout oceanbase_v && cd libs/langchain && pip3 install -e .
+RUN cd langchain/libs/community && pip3 install -e .
+
 RUN pip3 install --upgrade pip -i $PIP_INDEX_URL \
     && pip3 install -i $PIP_INDEX_URL ".[$DB_GPT_INSTALL_MODEL]" \
     # install openai for proxyllm

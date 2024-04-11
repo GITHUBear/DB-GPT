@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  oceanbase:
+    image: githubear/ob_vector
+    ports: 
+      - 2881:2881
+    networks:
+      - dbgptnet
+  dbgpt:
+    image: githubear/ob_dbgpt
+    environment:
+      - OB_HOST=oceanbase
+      - LOCAL_DB_TYPE=sqlite
+      - TONGYI_PROXY_API_KEY=sk-a7bbef01fce94355bd8db88c5a3fbfb1
+      - OB_SQL_DBG_LOG_PATH=/sql_log/sql.log
+    ports:
+      - 3306:3306
+      - 12345:12345
+    volumes:
+      - /Users/dimdew/Documents/ob_vec/db_gpt_sql_log:/sql_log
+    networks:
+      - dbgptnet
+
+networks:
+  dbgptnet:
+    driver: bridge
+    name: dbgptnet
