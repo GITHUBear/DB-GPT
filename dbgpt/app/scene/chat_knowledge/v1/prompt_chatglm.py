@@ -14,14 +14,14 @@ PROMPT_SCENE_DEFINE = """A chat between a curious user and an artificial intelli
     The assistant gives helpful, detailed, professional and polite answers to the user's questions. """
 
 
-_DEFAULT_TEMPLATE_ZH = """ 基于以下已知的信息, 专业、简要的回答用户的问题,
-            如果无法从提供的内容中获取答案, 请说: "知识库中提供的内容不足以回答此问题" 禁止胡乱编造。 
+_DEFAULT_TEMPLATE_ZH = """ 基于以下已知的信息, 尽可能详细且专业地回答用户的问题,
+            如果无法从提供的内容中获取答案, 请说: "知识库中提供的内容不足以回答此问题" 禁止胡乱编造。 回答的时候最好按照1.2.3.点进行总结并且尽可能详细。
             已知内容: 
             {context}
             问题:
             {question}
 """
-_DEFAULT_TEMPLATE_EN = """ Based on the known information below, provide users with professional and concise answers to their questions. If the answer cannot be obtained from the provided content, please say: "The information provided in the knowledge base is not sufficient to answer this question." It is forbidden to make up information randomly. 
+_DEFAULT_TEMPLATE_EN = """ Based on the known information below, provide users with professional and detailed answers to their questions. If the answer cannot be obtained from the provided content, please say: "The information provided in the knowledge base is not sufficient to answer this question." It is forbidden to make up information randomly. When answering, it is best to summarize according to points 1.2.3. And provide as detaied an answer as possible.
             known information: 
             {context}
             question:

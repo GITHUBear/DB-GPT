@@ -4,6 +4,7 @@ from .embedding_factory import DefaultEmbeddingFactory, EmbeddingFactory  # noqa
 from .embeddings import (  # noqa: F401
     Embeddings,
     HuggingFaceBgeEmbeddings,
+    HuggingFaceBGEM3Embeddings,
     HuggingFaceEmbeddings,
     HuggingFaceInferenceAPIEmbeddings,
     HuggingFaceInstructEmbeddings,
@@ -14,6 +15,7 @@ from .embeddings import (  # noqa: F401
 __ALL__ = [
     "Embeddings",
     "HuggingFaceBgeEmbeddings",
+    "HuggingFaceBGEM3Embeddings",
     "HuggingFaceEmbeddings",
     "HuggingFaceInferenceAPIEmbeddings",
     "HuggingFaceInstructEmbeddings",

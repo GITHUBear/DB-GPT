@@ -167,11 +167,13 @@ EMBEDDING_MODEL_CONFIG = {
     # https://huggingface.co/BAAI/bge-large-zh
     "bge-large-zh": os.path.join(MODEL_PATH, "bge-large-zh"),
     "bge-base-zh": os.path.join(MODEL_PATH, "bge-base-zh"),
+    "bge-m3": os.path.join(MODEL_PATH, "bge-m3"),
     "gte-large-zh": os.path.join(MODEL_PATH, "gte-large-zh"),
     "gte-base-zh": os.path.join(MODEL_PATH, "gte-base-zh"),
     "sentence-transforms": os.path.join(MODEL_PATH, "all-MiniLM-L6-v2"),
     "proxy_openai": "proxy_openai",
     "proxy_azure": "proxy_azure",
+    "proxy_dashscope": "proxy_dashscope",
     # Common HTTP embedding model
     "proxy_http_openapi": "proxy_http_openapi",
 }

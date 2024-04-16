@@ -57,13 +57,13 @@ class OceanBaseStore(VectorStoreBase):
             collection_name = self.collection_name,
             logger = self.logger,
             sql_logger = sql_logger,
-            enable_index = True,
+            enable_index = False,
             collection_stat = self.collection_stat
         )
 
     def similar_search(self, text, topk, **kwargs: Any) -> List[Chunk]:
         self.logger.info("OceanBase: similar_search..")
-        lc_documents = self.vector_store_client.similarity_search(text, topk)
+        lc_documents = self.vector_store_client.similarity_search(text, topk, enable_subtitle=True)
         return [
             Chunk(content=doc.page_content, metadata=doc.metadata)
             for doc in lc_documents
@@ -72,7 +72,7 @@ class OceanBaseStore(VectorStoreBase):
     def similar_search_with_scores(self, text, topk, score_threshold) -> List[Chunk]:
         self.logger.info("OceanBase: similar_search_with_scores..")
         docs_and_scores = (
-            self.vector_store_client.similarity_search_with_score(text, topk)
+            self.vector_store_client.similarity_search_with_score(text, topk, enable_subtitle=True)
         )
         return [
             Chunk(content=doc.page_content, metadata=doc.metadata, score=score)
@@ -91,9 +91,10 @@ class OceanBaseStore(VectorStoreBase):
     def load_document(self, chunks: List[Chunk]) -> List[str]:
         self.logger.info("OceanBase: load_document..")
         lc_documents = [Chunk.chunk2langchain(chunk) for chunk in chunks]
+        subtitles = ['-'.join((list(chunk.metadata.values()))[:-1]) for chunk in chunks]
         texts = [d.page_content for d in lc_documents]
         metadatas = [d.metadata for d in lc_documents]
-        ids = self.vector_store_client.add_texts(texts=texts, metadatas=metadatas)
+        ids = self.vector_store_client.add_texts(texts=texts, metadatas=metadatas, subtitles=subtitles)
         return ids
 
     def delete_vector_name(self, vector_name):
@@ -104,4 +105,4 @@ class OceanBaseStore(VectorStoreBase):
         self.logger.info("OceanBase: delete_by_ids..")
         ids = ids.split(",")
         if len(ids) > 0:
-            self.vector_store_client.delete(ids)
+            self.vector_store_client.delete(ids, enable_subtitle=True)

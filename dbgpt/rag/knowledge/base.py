@@ -67,13 +67,13 @@ class ChunkStrategy(Enum):
             {
                 "param_name": "chunk_size",
                 "param_type": "int",
-                "default_value": 512,
+                "default_value": 4000,
                 "description": "The size of the data chunks used in processing.",
             },
             {
                 "param_name": "chunk_overlap",
                 "param_type": "int",
-                "default_value": 50,
+                "default_value": 500,
                 "description": "The amount of overlap between adjacent data chunks.",
             },
         ],

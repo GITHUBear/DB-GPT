@@ -554,9 +554,37 @@ class ProxyEmbeddingParameters(BaseEmbeddingModelParameters):
             params[k] = v
         return params
 
+@dataclass
+class DashscopeEmbeddingParameters(BaseEmbeddingModelParameters):
+    proxy_api_key: str = field(
+        metadata={
+            "tags": "privacy",
+            "help": "The api key of the current embedding model(OPENAI_API_KEY)",
+        },
+    )
+    proxy_backend: Optional[str] = field(
+        default="text-embedding-v1",
+        metadata={
+            "help": "The model name actually pass to current proxy server url, such as text-embedding-ada-002"
+        },
+    )
+    device: Optional[str] = field(
+        default=None,
+        metadata={"help": "Device to run model. Not working for proxy embedding model"},
+    )
+
+    def build_kwargs(self, **kwargs) -> Dict:
+        params = {
+            "model": self.proxy_backend,
+            "dashscope_api_key": self.proxy_api_key,
+        }
+        for k, v in kwargs:
+            params[k] = v
+        return params
 
 _EMBEDDING_PARAMETER_CLASS_TO_NAME_CONFIG = {
     ProxyEmbeddingParameters: "proxy_openai,proxy_azure,proxy_http_openapi",
+    DashscopeEmbeddingParameters: "proxy_dashscope"
 }
 
 EMBEDDING_NAME_TO_PARAMETER_CLASS_CONFIG = {}

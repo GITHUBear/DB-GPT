@@ -34,6 +34,9 @@ class EmbeddingLoader:
                 from langchain.embeddings import OpenAIEmbeddings
 
                 return OpenAIEmbeddings(**param.build_kwargs())
+            elif model_name in ["proxy_dashscope"]:
+                from langchain.embeddings import DashScopeEmbeddings
+                return DashScopeEmbeddings(**param.build_kwargs())
             elif model_name in ["proxy_http_openapi"]:
                 from dbgpt.rag.embedding import OpenAPIEmbeddings
 
@@ -45,7 +48,17 @@ class EmbeddingLoader:
                     openapi_param["api_key"] = proxy_param.proxy_api_key
                 if proxy_param.proxy_backend:
                     openapi_param["model_name"] = proxy_param.proxy_backend
-                return OpenAPIEmbeddings(**openapi_param)
+                return OpenAPIEmbeddings(**openapi_param)   
+            elif model_name in ["bge-large-zh"]:
+                from dbgpt.rag.embedding import HuggingFaceBgeEmbeddings
+
+                kwargs = param.build_kwargs(model_name=param.model_path)
+                return HuggingFaceBgeEmbeddings(**kwargs)
+            elif model_name in ["bge-m3"]:
+                from dbgpt.rag.embedding import HuggingFaceBGEM3Embeddings
+
+                kwargs = param.build_kwargs(model_name=param.model_path)
+                return HuggingFaceBGEM3Embeddings(**kwargs)
             else:
                 from langchain.embeddings import HuggingFaceEmbeddings
 
