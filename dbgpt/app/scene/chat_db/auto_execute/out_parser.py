@@ -4,6 +4,9 @@ import xml.etree.ElementTree as ET
 from typing import Dict, NamedTuple
 
 import sqlparse
+import pandas as pd
+from sklearn.manifold import TSNE
+import numpy as np
 
 from dbgpt._private.config import Config
 from dbgpt.core.interface.output_parser import BaseOutputParser
@@ -68,6 +71,34 @@ class DbChatOutputParser(BaseOutputParser):
                 logger.error(f"json load failed:{clean_str}")
                 return SqlAction("", clean_str, "", "")
 
+    def parse_vector_data_with_tsne(self, df):
+        nrow, ncol = df.shape
+        vec_col = -1
+        for i_col in range(ncol):
+            if isinstance(df.iloc[:, i_col][0], bytes):
+                # json.loads(value.decode())
+                sample = df.iloc[:, i_col][0]
+                if isinstance(json.loads(sample.decode()), list):
+                    vec_col = i_col
+                    break
+        if vec_col == -1:
+            return df
+        df.iloc[:, vec_col] = df.iloc[:, vec_col].apply(lambda x: json.loads(x.decode()))
+        X = np.array(df.iloc[:, vec_col].tolist())
+        tsne = TSNE(n_components=2, perplexity=min(nrow - 1, 50))
+        X_tsne = tsne.fit_transform(X).tolist()
+        # df.iloc[:, vec_col] = X_tsne.tolist().map(lambda x: str[x])
+
+        new_df = pd.DataFrame()
+        for i_col in range(ncol):
+            if i_col == vec_col:
+                continue
+            col_name = df.columns[i_col]
+            new_df[col_name] = df[col_name]
+        new_df["__x"] = [pos[0] for pos in X_tsne]
+        new_df["__y"] = [pos[1] for pos in X_tsne]
+        return new_df
+
     def parse_view_response(self, speak, data, prompt_response) -> str:
         param = {}
         api_call_element = ET.Element("chart-view")
@@ -83,6 +114,9 @@ class DbChatOutputParser(BaseOutputParser):
             if prompt_response.sql:
                 df = data(prompt_response.sql)
                 param["type"] = prompt_response.display
+                if param["type"] == "response_vector_plot":
+                    df = self.parse_vector_data_with_tsne(df)
+                    param["type"] = "response_scatter_plot"
                 param["sql"] = prompt_response.sql
                 param["data"] = json.loads(
                     df.to_json(orient="records", date_format="iso", date_unit="s")
@@ -94,6 +128,8 @@ class DbChatOutputParser(BaseOutputParser):
                 view_json_str = ""
                 success = True
         except Exception as e:
+            import traceback
+            # logger.info(f"{traceback.print_exc()}")
             logger.error("parse_view_response error!" + str(e))
             err_param = {
                 "sql": f"{prompt_response.sql}",

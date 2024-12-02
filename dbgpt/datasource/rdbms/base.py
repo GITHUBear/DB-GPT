@@ -15,6 +15,8 @@ from sqlalchemy.engine import CursorResult
 from sqlalchemy.exc import ProgrammingError, SQLAlchemyError
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.schema import CreateTable
+from sqlalchemy.dialects import registry
+import pyobvector
 
 from dbgpt.datasource.base import BaseConnector
 from dbgpt.storage.schema import DBType
@@ -105,6 +107,7 @@ class RDBMSConnector(BaseConnector):
             db_name (str): database name.
             engine_args (Optional[dict]):other engine_args.
         """
+        registry.register("mysql.ob", "pyobvector", "OceanBaseDialect")
         db_url: str = (
             f"{cls.driver}://{quote(user)}:{urlquote(pwd)}@{host}:{str(port)}/{db_name}"
         )

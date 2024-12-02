@@ -526,6 +526,9 @@ class BaseChat(ABC):
             {
                 "response_heatmap": "Suitable for visual analysis of time series data, large-scale data sets, distribution of classified data, etc."
             },
+            {
+                "response_vector_plot": "Suitable for projecting high-dimensional vector data onto a two-dimensional plot through the t-SNE algorithm."
+            },
         ]
 
         return "\n".join(
